@@ -1,0 +1,36 @@
+version: '2'
+services:
+  nx_php:
+    build: ./php
+    container_name: nx_php
+    volumes:
+      - ./source:/var/www/html
+    links:
+      - nx_memcached
+      - nx_redis
+      - nx_mysql
+    environment: 
+      - DEBUG=1
+    ports:
+      - 80:80
+  nx_composer:
+    build: ./composer
+    container_name: composer
+    volumes_from:
+      - nx_php
+    working_dir: /var/www/html
+  nx_memcached:
+    image: memcached:alpine
+    container_name: nx_memcached
+    mem_limit: 512m
+    command: memcached -m 512m
+  nx_redis:
+    image: redis:alpine
+    container_name: nx_redis
+  nx_mysql:
+    build: ./mysql
+    container_name: nx_mysql
+    volumes: 
+      - ./mysql/data:/var/lib/mysql
+    environment: 
+      - MYSQL_ROOT_PASSWORD=root

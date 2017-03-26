@@ -1,0 +1,12 @@
+{
+    "name": "root/html",
+    "require": {
+        "monolog/monolog": "^1.22"
+    },
+    "authors": [
+        {
+            "name": "Vuong",
+            "email": "vuong@gmail.com"
+        }
+    ]
+}
