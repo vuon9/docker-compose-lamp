@@ -1,0 +1,43 @@
+FROM php:5.6-apache
+RUN apt-get update
+
+# Install extensions
+
+# php-memcache
+## RUN apt-get update && apt-get install -y libz-dev \
+##    && pecl install memcache
+##    && docker-php-ext-enable memcache
+
+# php-memcached
+RUN apt-get install -y libmemcached-dev zlib1g-dev \
+    && pecl install memcached-2.2.0 \
+    && docker-php-ext-enable memcached
+
+# php-redis
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
+# php-mysqli
+RUN docker-php-ext-install mysqli
+
+# php-xcache
+## RUN curl -fsSL 'https://xcache.lighttpd.net/pub/Releases/3.2.0/xcache-3.2.0.tar.gz' -o xcache.tar.gz \
+##    && mkdir -p xcache \
+##    && tar -xf xcache.tar.gz -C xcache --strip-components=1 \
+##    && rm xcache.tar.gz \
+##    && ( \
+##    cd xcache \
+##    && phpize \
+##    && ./configure --enable-xcache \
+##    && make -j$(nproc) \
+##    && make install \
+##    ) \
+##    && rm -r xcache \
+##    && docker-php-ext-enable xcache
+
+# PHPUnit
+COPY ./phpunit-5.7.17.phar /usr/local/bin/phpunit
+RUN chmod +x /usr/local/bin/phpunit
+
+WORKDIR /var/www/html
+EXPOSE 80
