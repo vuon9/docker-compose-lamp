@@ -1,4 +1,4 @@
-# docker-php-app
+# docker-compose-lamp
 Docker compose for php development
 * PHP 7 - Apache (Also added Dockerfile for PHP 5.6)
 * PHPUnit (included `test.php` to make a simple test)
