@@ -30,10 +30,12 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
   nx_node:
-    build: ./nodejs
+    build: node:slim
     command: 'npm start'
     working_dir: '/var/www/html'
     container_name: nx_node
+    expose:
+      - "8888"
     volumes_from:
       - nx_php
 volumes:
