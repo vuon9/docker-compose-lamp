@@ -20,7 +20,3 @@ docker-compose up -d
 ```
 # Access PHP
 - Access `localhost` or `192.168.99.100` (if using Docker Toolbox).
-# Update vendors via Composer
-```
-docker-compose run nx_composer update
-```
