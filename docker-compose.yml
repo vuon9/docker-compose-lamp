@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   nx_php:
     build: ./php
@@ -9,19 +9,13 @@ services:
       - nx_memcached
       - nx_redis
       - nx_mysql
-    environment: 
+    environment:
       - DEBUG=1
     ports:
       - 80:80
-  nx_composer:
-    build: ./composer
-    container_name: nx_composer
-    volumes_from:
-      - nx_php
   nx_memcached:
     image: memcached:alpine
     container_name: nx_memcached
-    mem_limit: 512m
     command: 'memcached -m 512m'
   nx_redis:
     image: redis:alpine
@@ -29,20 +23,19 @@ services:
   nx_mysql:
     build: ./mysql
     container_name: nx_mysql
-    volumes: 
-      - vol-mysql:/var/lib/mysql
+    volumes:
+      - vol_mysql:/var/lib/mysql
     ports:
       - 3306:3306
-    environment: 
+    environment:
       - MYSQL_ROOT_PASSWORD=root
   nx_node:
     build: ./nodejs
     command: 'npm start'
     working_dir: '/var/www/html'
     container_name: nx_node
-    volumes_from: 
+    volumes_from:
       - nx_php
-volumes: 
-  vol-mysql:
+volumes:
+  vol_mysql:
     driver: "local"
-
