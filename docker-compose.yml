@@ -21,7 +21,7 @@ services:
     image: redis:alpine
     container_name: nx_redis
   nx_mysql:
-    build: ./mysql
+    image: mysql
     container_name: nx_mysql
     volumes:
       - vol_mysql:/var/lib/mysql
