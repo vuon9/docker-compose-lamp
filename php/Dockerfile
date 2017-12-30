@@ -1,5 +1,18 @@
 FROM php:7-apache
-RUN apt-get update
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git zip
+
+# Composer
+RUN curl --silent --show-error https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    chmod +x /usr/local/bin/composer && \
+    composer --version
+
+# PHPUnit
+RUN curl -fsSL https://phar.phpunit.de/phpunit-6.5.phar -o phpunit-6.5.phar && \
+    mv phpunit-6.5.phar /usr/local/bin/phpunit && \
+    chmod +x /usr/local/bin/phpunit && \
+    phpunit --version
 
 # Install extensions
 
@@ -12,10 +25,6 @@ RUN apt-get update
 RUN apt-get install -y libmemcached-dev zlib1g-dev \
     && pecl install memcached \
     && docker-php-ext-enable memcached
-
-# php-redis
-RUN pecl install redis \
-    && docker-php-ext-enable redis
 
 # php-mysqli
 RUN docker-php-ext-install mysqli
@@ -34,10 +43,6 @@ RUN docker-php-ext-install mysqli
 ##    ) \
 ##    && rm -r xcache \
 ##    && docker-php-ext-enable xcache
-
-# PHPUnit
-COPY ./phpunit-6.0.10.phar /usr/local/bin/phpunit
-RUN chmod +x /usr/local/bin/phpunit
 
 WORKDIR /var/www/html
 EXPOSE 80
