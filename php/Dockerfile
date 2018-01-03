@@ -27,7 +27,7 @@ RUN apt-get install -y libmemcached-dev zlib1g-dev \
     && docker-php-ext-enable memcached
 
 # php-mysqli
-RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 # php-xcache
 ## RUN curl -fsSL 'https://xcache.lighttpd.net/pub/Releases/3.2.0/xcache-3.2.0.tar.gz' -o xcache.tar.gz \
