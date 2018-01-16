@@ -1,4 +1,4 @@
-FROM php:7-apache
+FROM php:7.1.8-apache
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git zip
 
@@ -14,35 +14,27 @@ RUN curl -fsSL https://phar.phpunit.de/phpunit-6.5.phar -o phpunit-6.5.phar && \
     chmod +x /usr/local/bin/phpunit && \
     phpunit --version
 
-# Install extensions
-
-# php-memcache
-## RUN apt-get update && apt-get install -y libz-dev \
-##    && pecl install memcache
-##    && docker-php-ext-enable memcache
-
 # php-memcached
 RUN apt-get install -y libmemcached-dev zlib1g-dev \
     && pecl install memcached \
     && docker-php-ext-enable memcached
 
-# php-mysqli
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+# Imagick
+RUN apt-get install -y libmagickwand-dev \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick
 
-# php-xcache
-## RUN curl -fsSL 'https://xcache.lighttpd.net/pub/Releases/3.2.0/xcache-3.2.0.tar.gz' -o xcache.tar.gz \
-##    && mkdir -p xcache \
-##    && tar -xf xcache.tar.gz -C xcache --strip-components=1 \
-##    && rm xcache.tar.gz \
-##    && ( \
-##    cd xcache \
-##    && phpize \
-##    && ./configure --enable-xcache \
-##    && make -j$(nproc) \
-##    && make install \
-##    ) \
-##    && rm -r xcache \
-##    && docker-php-ext-enable xcache
+# Necessary extensions
+RUN docker-php-ext-install pdo pdo_mysql zip opcache
+
+# Apache2 config
+COPY vhost.conf /etc/apache2/sites-available/000-default.conf
+RUN chown -R www-data:www-data /var/www/html \
+    && a2enmod rewrite
 
 WORKDIR /var/www/html
+
+# Custom docker entry point to run initial commands
+# ENTRYPOINT [ "docker-entrypoint.sh" ]
+
 EXPOSE 80
