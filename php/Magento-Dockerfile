@@ -1,0 +1,60 @@
+FROM php:7.1-apache
+
+# https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait
+ADD ./wait /wait
+
+RUN apt-get update && apt-get install -y \
+        supervisor \
+        libmcrypt-dev \
+        zlib1g-dev \
+        libicu-dev \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        libxml2-dev \
+        libxslt-dev \
+        libbz2-dev \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install -j$(nproc) \
+        pdo \
+        pdo_mysql \
+        mcrypt \
+        intl \
+        iconv \
+        opcache \
+        xml \
+        xsl \
+        zip \
+        bz2 \
+        calendar \
+        exif \
+        mysqli \
+        bcmath \
+    && docker-php-ext-configure gd \
+        --with-freetype-dir=/usr/include/ \
+        --with-jpeg-dir=/usr/include/ \
+        --with-png-dir=/usr/include/ \
+    && docker-php-ext-configure xml --with-libxml-dir=/usr/include \
+    && docker-php-ext-install -j$(nproc) gd xml xmlrpc soap \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apt-get clean \
+    && mkdir -p /var/log/supervisor \
+    && chmod +x /wait \
+    && a2enmod rewrite \
+    && a2enmod headers \
+    && a2enmod ssl \
+    && a2ensite default-ssl
+
+# Copy source to web folder, 
+# This step will avoid high frequency reading on host source folder it caused of high CPU usage.
+ADD ./source/ /var/www/html
+
+ADD sites-available/default-ssl.conf  /etc/apache2/sites-available/
+ADD sites-available/000-default.conf  /etc/apache2/sites-available/
+ADD certs/bundle.crt  /etc/ssl/certs
+ADD certs/private.key  /etc/ssl/private
+
+ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+CMD /wait && /usr/bin/supervisord
